@@ -1,0 +1,17 @@
+services:
+  juice-shop:
+    image: bkimminich/juice-shop
+    container_name: juice-shop
+    ports:
+      - "3000:3000"
+    restart: always
+
+  zap:
+    image: ghcr.io/zaproxy/zaproxy:stable
+    container_name: zap
+    depends_on:
+      - juice-shop
+    command: >
+      zap-baseline.py -t http://juice-shop:3000 -r /zap/wrk/report.html
+    volumes:
+      - ./zap:/zap/wrk
