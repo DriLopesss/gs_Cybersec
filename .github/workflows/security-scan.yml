@@ -1,0 +1,27 @@
+name: OWASP ZAP Full Scan
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  zap_full_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Full Scan
+        run: docker-compose -f docker-compose.yml up --abort-on-container-exit
+
+      - name: Upload Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-full-reports
+          path: |
+            zap/report.html
+            zap/report.json
+            zap/report.xml
+            zap/report.md

@@ -11,7 +11,12 @@ services:
     container_name: zap
     depends_on:
       - juice-shop
-    command: >
-      zap-baseline.py -t http://juice-shop:3000 -r /zap/wrk/report.html
     volumes:
       - ./zap:/zap/wrk
+    entrypoint: >
+     sh -c "
+     echo 'Waiting for Juice Shop...' &&
+      until curl -s http://juice-shop:3000 > /dev/null; do sleep 1; done &&
+      echo 'Juice Shop is up! Starting FULL SCAN...' &&
+      zap.sh -cmd -autorun /zap/wrk/zap.yaml
+      "

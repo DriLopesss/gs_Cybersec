@@ -1,33 +1,49 @@
 env:
   contexts:
-  - excludePaths: []
-    name: baseline
-    urls:
-    - http://juice-shop:3000
-  parameters:
-    failOnError: true
-    progressToStdout: false
+    - name: "full-scan"
+      urls:
+        - "http://juice-shop:3000"
+
 jobs:
-- parameters:
-    enableTags: false
-    maxAlertsPerRule: 10
-  type: passiveScan-config
-- parameters:
-    maxDuration: 1
-    url: http://juice-shop:3000
-  type: spider
-- parameters:
-    maxDuration: 0
-  type: passiveScan-wait
-- parameters:
-    format: Long
-    summaryFile: /home/zap/zap_out.json
-  rules: []
-  type: outputSummary
-- parameters:
-    reportDescription: ''
-    reportDir: /zap/wrk/
-    reportFile: /zap/wrk/report.html
-    reportTitle: ZAP Scanning Report
-    template: traditional-html
-  type: report
+  - type: spider
+    parameters:
+      url: "http://juice-shop:3000"
+      maxChildren: 10
+      maxDepth: 5
+      maxDuration: 2
+
+  - type: activeScan
+    parameters:
+      url: "http://juice-shop:3000"
+      maxRuleDurationInMins: 1
+      addQueryParam: true
+      recurse: true
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 2
+
+  - type: report
+    parameters:
+      reportDir: "/zap/wrk"
+      reportFile: "report.html"
+      template: "traditional-html"
+      reportTitle: "OWASP ZAP Full Scan Report"
+
+  - type: report
+    parameters:
+      template: "traditional-xml"
+      reportDir: "/zap/wrk"
+      reportFile: "report.xml"
+
+  - type: report
+    parameters:
+      template: "traditional-json"
+      reportDir: "/zap/wrk"
+      reportFile: "report.json"
+
+  - type: report
+    parameters:
+      template: "traditional-md"
+      reportDir: "/zap/wrk"
+      reportFile: "report.md"
